@@ -20,6 +20,10 @@ export class UsersService {
     }
   }
 
+  async findByWechatId(wechatId: string): Promise<User> {
+    return await this.userModel.findOne({ wechatId }).exec();
+  }
+
   async queryCustomer(queryCustomerDto: QueryCustomerDto) {
     const thisMonth = await this.getThisMonth();
     if (queryCustomerDto.isThisMonth === false) {
