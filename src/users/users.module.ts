@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerMiddleware } from '../common/middlewares/logger.middleware';
+import { JWTService } from './jwt.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { LoggerMiddleware } from '../common/middlewares/logger.middleware';
     HttpModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, JWTService],
 })
 export class UsersModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
