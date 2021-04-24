@@ -1,9 +1,9 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetQrcodeDto {
   @IsNotEmpty()
-  @IsString()
+  @IsEmail()
   @ApiProperty()
-  readonly scene: string;
+  readonly email: string;
 }
