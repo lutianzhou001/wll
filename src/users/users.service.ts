@@ -51,17 +51,21 @@ export class UsersService {
     return await this.userModel.findOne({ wechatId }).exec();
   }
 
-  async queryCustomer(queryCustomerDto: QueryCustomerDto) {
+  async queryCustomer(queryCustomerDto: QueryCustomerDto, inviter: string) {
     const thisMonth = await this.getThisMonth();
     if (queryCustomerDto.isThisMonth === false) {
+      const query: any = {
+        $and: [{ inviter: inviter }, { role: 'CUSTOMER' }],
+      };
       return await this.userModel
-        .find()
+        .find(query)
         .skip(queryCustomerDto.offset)
         .limit(queryCustomerDto.limit)
         .exec();
     } else {
       const query: any = {
         $and: [
+          { inviter: inviter },
           {
             createDate: {
               $gte: thisMonth[0],

@@ -1,4 +1,11 @@
-import { Body, Controller, Get, UseGuards, Request, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  UseGuards,
+  Request,
+  Post,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation } from '@nestjs/swagger';
 import { IResponse } from './common/interfaces/response.interface';
@@ -9,7 +16,10 @@ import { UsersService } from './users/users.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, private  readonly usersService:UsersService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get()
   getHello(): string {
@@ -21,18 +31,16 @@ export class AppController {
     return '1.1.0';
   }
 
-  // @UseGuards(AuthGuard('jwt'))
   @Post('/qrcode')
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ description: '获取二维码' })
-  async getQRCode(@Body() getQRCodeDto: GetQrcodeDto): Promise<IResponse> {
+  async getQRCode(
+    @Body() getQRCodeDto: GetQrcodeDto,
+    @Request() req,
+  ): Promise<IResponse> {
     try {
-      const res = await this.usersService.findByEmail(getQRCodeDto.email);
-      if (res) {
-        const response = await this.appService.getQRCode(res._id);
-        return new ResponseSuccess('GET_QRCODE_SUCCESSFUL', response);
-      } else {
-        return new ResponseError('FIND_SALES_ERROR');
-      }
+      const response = await this.appService.getQRCode(req.user._id);
+      return new ResponseSuccess('GET_QRCODE_SUCCESSFUL', response);
     } catch (e) {
       return new ResponseError('GET_QRCODE_ERROR', e);
     }

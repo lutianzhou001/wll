@@ -1,6 +1,8 @@
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserSchema } from './schemas/user.schema';
+import { JwtStrategy } from './passport/jwt.strategy';
+
 import {
   Module,
   NestModule,
@@ -17,7 +19,7 @@ import { JWTService } from './jwt.service';
     HttpModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, JWTService],
+  providers: [UsersService, JWTService, JwtStrategy],
 })
 export class UsersModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {

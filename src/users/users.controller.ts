@@ -1,4 +1,11 @@
-import { Controller, Injectable, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Injectable,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -69,9 +76,14 @@ export class UsersController {
   @ApiOperation({ description: '查询我的客户' })
   async queryCustomer(
     @Body() queryCustomerDto: QueryCustomerDto,
+    @Request() req,
   ): Promise<IResponse> {
     try {
-      const customers = await this.usersService.queryCustomer(queryCustomerDto);
+      // console.log(req.user);
+      const customers = await this.usersService.queryCustomer(
+        queryCustomerDto,
+        req.user._id,
+      );
       return new ResponseSuccess('QUERY_SUCCEED', customers);
     } catch (e) {
       return new ResponseError('QUERY_FAILED', e);
