@@ -11,6 +11,10 @@ export class AppService {
     return 'Hello World!';
   }
 
+  // async writeFile(decodedImage) {
+  //   fs.writeFile('qrcode.jpg', decodedImage, function (err) {});
+  // }
+
   async getQRCode(scene: string) {
     // first get the access-code
     const getAccessTokenUrl =
@@ -26,13 +30,14 @@ export class AppService {
       const getQRCodeUrl =
         'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' +
         getAccessTokenRes.access_token;
-      const pic = await this.httpService
+      const original_data = await this.httpService
         .post(getQRCodeUrl, {
           scene: scene,
         })
         .pipe(map((response) => response.data))
         .toPromise();
-      return pic.toString('base64');
+      const b = Buffer.from(original_data);
+      return b.toString('base64');
     } else {
       return new ResponseError(
         'REQUEST_QRCODE_ERROR',

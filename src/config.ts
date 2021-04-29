@@ -23,7 +23,7 @@ export default {
     pass: 'AZaz123456',
   },
   app: {
-    appId: 'aaa',
-    appSecret: 'bbb',
+    appId: 'wx8969060389db1b5d',
+    appSecret: 'ce36079c5ba4c8327b04b0ad6ca630d0',
   },
 };
