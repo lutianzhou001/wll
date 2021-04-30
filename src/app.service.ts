@@ -1,7 +1,8 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { Injectable, HttpService, HttpException } from '@nestjs/common';
 import { default as config } from './config';
 import { map } from 'rxjs/operators';
-import { ResponseError } from './common/dto/response.dto';
+import * as child from 'child_process';
+import * as fs from 'fs';
 
 @Injectable()
 export class AppService {
@@ -15,7 +16,7 @@ export class AppService {
   //   fs.writeFile('qrcode.jpg', decodedImage, function (err) {});
   // }
 
-  async getQRCode(scene: string) {
+  async queryAccessToken() {
     // first get the access-code
     const getAccessTokenUrl =
       'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' +
@@ -27,22 +28,33 @@ export class AppService {
       .pipe(map((response) => response.data))
       .toPromise();
     if (getAccessTokenRes.access_token) {
-      const getQRCodeUrl =
-        'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' +
-        getAccessTokenRes.access_token;
-      const original_data = await this.httpService
-        .post(getQRCodeUrl, {
-          scene: scene,
-        })
-        .pipe(map((response) => response.data))
-        .toPromise();
-      const b = Buffer.from(original_data);
-      return b.toString('base64');
+      return getAccessTokenRes.access_token;
     } else {
-      return new ResponseError(
-        'REQUEST_QRCODE_ERROR',
-        getAccessTokenRes.errcode,
-      );
+      throw new Error('GET_ACCESSTOKEN_ERROR');
+    }
+  }
+
+  async getQRCode(scene: string) {
+    try {
+      const act = await this.queryAccessToken();
+      const curl =
+        'curl --output qrcode.jpg https://api.weixin.qq.com/wxa/getwxacodeunlimit\\?access_token\\=' +
+        act +
+        ' -d \'{"scene": "' +
+        scene +
+        '"}\'';
+      await child.exec(curl, function (err, stdout, stderr) {
+        if (err) {
+          // TODO
+          // throw new Error('SAVING_PICTURE_ERROR');
+        }
+      });
+      const bitmap = fs.readFileSync('qrcode.jpg');
+      // convert binary data to base64 encoded string
+      const b = Buffer.from(bitmap).toString('base64');
+      return b;
+    } catch (e) {
+      throw new Error('CANNOT_FIND_FILE');
     }
   }
 }
