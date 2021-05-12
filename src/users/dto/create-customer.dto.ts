@@ -1,7 +1,4 @@
-import {
-  IsString,
-  IsNumber, IsNotEmpty
-} from "class-validator";
+import { IsString, IsNumber, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCustomerDto {
@@ -18,7 +15,7 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty()
-  readonly createDate: number;
+  createDate: number;
 
   @IsNotEmpty()
   @IsString()

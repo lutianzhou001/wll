@@ -19,6 +19,7 @@ export class UsersService {
     private readonly jwtService: JWTService,
   ) {}
   async customerCreate(newCustomer: CreateCustomerDto) {
+    newCustomer.createDate = Math.floor(newCustomer.createDate / 1000);
     const createdCustomer = new this.userModel(newCustomer);
     const userRegistered = await this.findByWechatId(newCustomer.wechatId);
     if (!userRegistered) {
